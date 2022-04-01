@@ -19,7 +19,7 @@ arr=(`convert tmp_mask.png \
 IFS=$OLD_IFS
 
 if [ ! -d "$OUTPUT_DIR" ]; then
-    mkdir "$OUTPUT_DIR"
+    mkdir -p "$OUTPUT_DIR"
 fi
 
 num=${#arr[*]}
