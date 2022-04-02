@@ -6,7 +6,7 @@ Linux with `imagemagick` installed.
 ## Usage
 
 ```bash
-$ ./sprite-splitter -i input.png -o output
+$ ./sprite-splitter input.png output
 ```
 
 ## What is it?
