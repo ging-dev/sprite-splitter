@@ -9,12 +9,23 @@ OLD_IFS=$IFS
 IFS=$'\n'
 
 # https://imagemagick.org/script/connected-components.php
-arr=(`convert tmp_mask.png \
+components=(`convert tmp_mask.png \
+    -define connected-components:exclude-header=true \
     -define connected-components:verbose=true \
     -define connected-components:area-threshold=10 \
     -define connected-components:mean-color=true \
     -connected-components 8 \
-    null: | tail -n +2 | grep --color=never 'gray(255)'`)
+    null: | grep --color=never 'gray(255)'
+`)
+
+result=(`
+    for value in "${components[@]}"
+    do
+        bbox=$(echo $value | awk '{print $2}')
+        x=$(echo $bbox | awk -F '+' '{print $2}')
+        echo "$x $bbox"
+    done | sort -nk1
+`)
 
 IFS=$OLD_IFS
 
@@ -22,11 +33,12 @@ if [ ! -d "$OUTPUT_DIR" ]; then
     mkdir -p "$OUTPUT_DIR"
 fi
 
-num=${#arr[*]}
-for ((i=0; i<num; i++))
+i=0
+for value in "${result[@]}"
 do
-    rect=`echo "${arr[$i]}" | awk '{print $2}'`
+    rect=`echo $value | awk '{print $2}'`
     convert $FILENAME -crop $rect +repage -background none ${OUTPUT_DIR}/${i}.png
+    i=$((i+1))
     echo -n '.'
 done
 
